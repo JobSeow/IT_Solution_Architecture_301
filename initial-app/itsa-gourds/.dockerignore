@@ -1,0 +1,10 @@
+.nuxt/
+assets/
+components/
+layouts/
+middleware/
+node_modules/
+pages/
+plugins/
+static/
+store/

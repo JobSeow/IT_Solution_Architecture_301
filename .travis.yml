@@ -1,0 +1,79 @@
+language: java
+
+script:
+- echo "Testing Conditions"
+- pwd
+- cd initial-app/itsa-gourds-backend
+# - gradle -Dtest.single=MaskControllerTest test
+- gradle check #This works too
+- cd ../../
+
+stages:
+  - name: master_frontend
+    if: branch = master
+  - name: master_backend
+    if: branch = master
+  - name: staging_frontend
+    if: branch = staging
+  - name: staging_backend
+    if: branch = staging
+  
+  
+jobs:
+  include:
+    
+    - stage: master_frontend
+      name: "Deploy to master frontend"
+      before_deploy: "cd initial-app/itsa-gourds/"
+      deploy: 
+        provider: elasticbeanstalk
+        access_key_id: "AKIAQVJPNH37UHXU44MU"
+        secret_access_key: "$AWS_SECRET_KEY"
+        region: "ap-southeast-1"
+        app: "itsa-frontend"
+        env: "itsa-frontend-dev-master"
+        bucket: "elasticbeanstalk-ap-southeast-1-045733461759"
+        on:
+          branch: master
+        
+    - stage: master_backend
+      name: "Deploy to master backend"
+      before_deploy: "cd initial-app/itsa-gourds-backend"
+      deploy: 
+        provider: elasticbeanstalk
+        access_key_id: "AKIAQVJPNH37UHXU44MU"
+        secret_access_key: "$AWS_SECRET_KEY"
+        region: "ap-southeast-1"
+        app: "itsa-backend"
+        env: "itsa-backend-dev-master"
+        bucket: "elasticbeanstalk-ap-southeast-1-045733461759"
+        on:
+          branch: master
+
+    - stage: staging_frontend
+      name: "Deploy to staging frontend"
+      before_deploy: "cd initial-app/itsa-gourds/"
+      deploy: 
+        provider: elasticbeanstalk
+        access_key_id: "AKIAUK27F2SOUSL4YU2A"
+        secret_access_key: "$AWS_SECRET_KEY_STAGING"
+        region: "ap-southeast-1"
+        app: "itsa-frontend"
+        env: "itsa-frontend-dev-staging"
+        bucket: "elasticbeanstalk-ap-southeast-1-298162967709"
+        on:
+          branch: staging
+        
+    - stage: staging_backend
+      name: "Deploy to staging backend"
+      before_deploy: "cd initial-app/itsa-gourds-backend"
+      deploy: 
+        provider: elasticbeanstalk
+        access_key_id: "AKIAUK27F2SOUSL4YU2A"
+        secret_access_key: "$AWS_SECRET_KEY_STAGING"
+        region: "ap-southeast-1"
+        app: "itsa-backend"
+        env: "itsa-backend-dev-staging"
+        bucket: "elasticbeanstalk-ap-southeast-1-298162967709"
+        on:
+          branch: staging
